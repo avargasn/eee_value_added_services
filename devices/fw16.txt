@@ -26,7 +26,6 @@ config system interface
         set vdom "root"
         set ip 198.18.30.254 255.255.255.0
         set allowaccess ping
-        set role lan
         set interface "port1"
         set vlanid 30
     next
