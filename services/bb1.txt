@@ -5,7 +5,7 @@ interface Port-Channel1
    switchport
    !
    evpn ethernet-segment
-      route-target import 00:00:00:00:00:01
+      identifier 0000:0000:0000:0000:0001
    lacp system-id 0000.0000.0001
 !
 interface Ethernet3
