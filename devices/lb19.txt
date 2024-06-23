@@ -1,6 +1,8 @@
-vrrp-a common 
-  device-id 2 
-  set-id 1 
+terminal idle-timeout 0
+!
+hostname LB19
+!
+interface ethernet 1
   enable 
 !
 vlan 100 
@@ -9,4 +11,19 @@ vlan 100
 !
 interface ve 100 
   ip address 192.0.2.1 255.255.255.254 
+!
+vrrp-a common
+  device-id 2
+  set-id 1 
+  enable
+!
+vcs enable
+!
+vcs device 2
+  interfaces ve 100 
+  enable 
+!
+vcs reload
+yes
+
 !

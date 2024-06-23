@@ -1,0 +1,25 @@
+username admin privilege 15 role network-admin secret admin
+!
+switchport default mode routed
+!
+hostname TELNET21
+!
+banner login
+***********************
+*                     *
+*   TELNET SERVER21   *
+*                     *
+***********************
+EOF
+!
+interface Ethernet1
+   no switchport
+   ip address 198.18.30.21/24
+!
+ip routing
+!
+ip route 0.0.0.0/0 198.18.30.254
+!
+management telnet
+   no shutdown
+!
