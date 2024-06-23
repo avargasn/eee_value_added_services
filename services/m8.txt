@@ -1,0 +1,15 @@
+vlan 30
+!
+interface Ethernet3
+   switchport access vlan 30
+   switchport
+!
+interface Vxlan1
+   vxlan vlan 30 vni 200030
+!
+router bgp 65535
+   vlan 30
+      rd auto
+      route-target both 65535:200030
+      redistribute learned
+!

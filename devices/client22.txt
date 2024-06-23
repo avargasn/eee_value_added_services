@@ -1,0 +1,12 @@
+switchport default mode routed
+!
+hostname CLIENT22
+!
+interface Ethernet1
+   no switchport
+   ip address 200.0.0.22/24
+!
+ip routing
+!
+ip route 0.0.0.0/0 200.0.0.254
+!

@@ -1,0 +1,23 @@
+vlan 50
+!
+interface Port-Channel1
+   switchport access vlan 50
+   switchport
+   !
+   evpn ethernet-segment
+      route-target import 00:00:00:00:00:01
+   lacp system-id 0000.0000.0001
+!
+interface Ethernet3
+   no switchport
+   channel-group 1 mode passive
+!
+interface Vxlan1
+   vxlan vlan 50 vni 200050
+!
+router bgp 65535
+   vlan 50
+      rd auto
+      route-target both 65535:200050
+      redistribute learned
+!

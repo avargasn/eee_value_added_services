@@ -1,0 +1,111 @@
+switchport default mode routed
+!
+service routing protocols model multi-agent
+!
+hostname BB3
+!
+interface Ethernet1
+   mtu 9000
+   no switchport
+   ip address 198.18.0.2/31
+   isis enable ISIS
+   isis network point-to-point
+   traffic-engineering
+   traffic-engineering bandwidth 100 percent
+!
+interface Ethernet2
+   mtu 9000
+   no switchport
+   ip address 198.18.0.5/31
+   isis enable ISIS
+   isis network point-to-point
+   traffic-engineering
+   traffic-engineering bandwidth 100 percent
+!
+interface Ethernet3
+   mtu 9000
+   no switchport
+   ip address 198.18.0.8/31
+   isis enable ISIS
+   isis network point-to-point
+!
+interface Ethernet4
+   mtu 9000
+   no switchport
+   ip address 198.18.0.14/31
+   isis enable ISIS
+   isis network point-to-point
+!
+interface Loopback0
+   ip address 198.18.255.3/32
+   isis enable ISIS
+!
+interface Vxlan1
+   vxlan source-interface Loopback0
+!
+ip routing
+!
+mpls ip
+!
+mpls ldp
+   router-id interface Loopback0
+   no shutdown
+!
+router bgp 65535
+   router-id 198.18.255.3
+   no bgp default ipv4-unicast
+   bgp cluster-id 198.18.255.3
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65535
+   neighbor UNDERLAY update-source Loopback0
+   neighbor UNDERLAY send-community extended
+   neighbor 198.18.255.1 peer group UNDERLAY
+   neighbor 198.18.255.1 route-reflector-client
+   neighbor 198.18.255.2 peer group UNDERLAY
+   neighbor 198.18.255.2 route-reflector-client
+   neighbor 198.18.255.4 peer group UNDERLAY
+   neighbor 198.18.255.5 peer group UNDERLAY
+   neighbor 198.18.255.5 route-reflector-client
+   neighbor 198.18.255.6 peer group UNDERLAY
+   neighbor 198.18.255.6 route-reflector-client
+   !
+   address-family evpn
+      neighbor UNDERLAY activate
+!
+router traffic-engineering
+   rsvp
+      local-interface Loopback0
+      !
+      path 301 explicit
+         hop 198.18.0.4
+      !
+      path 302 explicit
+         hop 198.18.0.3
+         hop 198.18.0.6
+      !
+      tunnel 301
+         destination ip 198.18.255.1
+         path 301
+         no shutdown
+      !
+      tunnel 302
+         destination ip 198.18.255.2
+         path 302
+         no shutdown
+   router-id ipv4 198.18.255.3
+!
+router isis ISIS
+   net 49.0002.0000.0000.0003.00
+   is-type level-2
+   mpls ldp sync default
+   !
+   address-family ipv4 unicast
+      bfd all-interfaces
+   !
+   traffic-engineering
+      no shutdown
+      is-type level-2
+!
+mpls rsvp
+   no shutdown
+!

@@ -1,0 +1,53 @@
+vlan 20,30,50,100-101
+!
+interface Ethernet5
+   switchport access vlan 50
+   switchport
+!
+interface Ethernet6
+   switchport trunk allowed vlan 20,30
+   switchport mode trunk
+   switchport
+!
+interface Ethernet7
+   switchport trunk allowed vlan 20,50,100
+   switchport mode trunk
+   switchport
+!
+interface Ethernet8
+   switchport access vlan 101
+   switchport
+!
+interface Vxlan1
+   vxlan vlan 20 vni 200020
+   vxlan vlan 30 vni 200030
+   vxlan vlan 50 vni 200050
+   vxlan vlan 100 vni 200100
+   vxlan vlan 101 vni 200101
+!
+router bgp 65535
+   vlan 20
+      rd auto
+      route-target both 65535:200020
+      redistribute learned
+   !
+   vlan 30
+      rd auto
+      route-target both 65535:200030
+      redistribute learned
+   !
+   vlan 50
+      rd auto
+      route-target both 65535:200050
+      redistribute learned
+   !
+   vlan 100
+      rd auto
+      route-target both 65535:200100
+      redistribute learned
+   !
+   vlan 101
+      rd auto
+      route-target both 65535:200101
+      redistribute learned
+!

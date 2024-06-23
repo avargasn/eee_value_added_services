@@ -1,0 +1,29 @@
+switchport default mode routed
+!
+hostname RR15
+!
+interface Ethernet1
+   ip address 198.18.50.15/24
+!
+interface Loopback0
+   ip address 198.18.255.15/32
+!
+ip routing
+!
+route-map SELECTIVE_DOWNLOAD deny 10
+!
+router bgp 65535
+   router-id 198.18.255.15
+   no bgp default ipv4-unicast
+   bgp route install-map SELECTIVE_DOWNLOAD
+   neighbor INTERNAL peer group
+   neighbor INTERNAL remote-as 65535
+   neighbor INTERNAL passive
+   neighbor INTERNAL route-reflector-client
+   neighbor 198.18.50.13 peer group INTERNAL
+   neighbor 198.18.50.18 peer group INTERNAL
+   neighbor 198.18.50.19 peer group INTERNAL
+   !
+   address-family ipv4
+      neighbor INTERNAL activate
+!

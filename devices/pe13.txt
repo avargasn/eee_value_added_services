@@ -1,0 +1,37 @@
+switchport default mode routed
+!
+hostname PE13
+!
+interface Port-Channel1
+   no switchport
+   ip address 198.18.50.13/24
+!
+interface Ethernet1
+   no switchport
+   channel-group 1 mode active
+!
+interface Ethernet2
+   no switchport
+   channel-group 1 mode active
+!
+interface Ethernet3
+   no switchport
+   ip address 200.0.0.254/24
+!
+interface Loopback0
+   ip address 198.18.255.13/32
+!
+ip routing
+!
+router bgp 65535
+   router-id 198.18.255.13
+   no bgp default ipv4-unicast
+   neighbor INTERNAL peer group
+   neighbor INTERNAL remote-as 65535
+   neighbor 198.18.50.14 peer group INTERNAL
+   neighbor 198.18.50.15 peer group INTERNAL
+   !
+   address-family ipv4
+      neighbor INTERNAL activate
+      network 200.0.0.0/24
+!

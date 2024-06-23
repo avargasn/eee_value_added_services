@@ -1,0 +1,12 @@
+vrrp-a common 
+  device-id 2 
+  set-id 1 
+  enable 
+!
+vlan 100 
+  tagged ethernet 1
+  router-interface ve 100 
+!
+interface ve 100 
+  ip address 192.0.2.1 255.255.255.254 
+!

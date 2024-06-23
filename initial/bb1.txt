@@ -1,0 +1,89 @@
+switchport default mode routed
+!
+service routing protocols model multi-agent
+!
+hostname BB1
+!
+interface Ethernet1
+   mtu 9000
+   no switchport
+   ip address 198.18.0.0/31
+   isis enable ISIS
+   isis network point-to-point
+   traffic-engineering
+   traffic-engineering bandwidth 100 percent
+!
+interface Ethernet2
+   mtu 9000
+   no switchport
+   ip address 198.18.0.4/31
+   isis enable ISIS
+   isis network point-to-point
+   traffic-engineering
+   traffic-engineering bandwidth 100 percent
+!
+interface Loopback0
+   ip address 198.18.255.1/32
+   isis enable ISIS
+!
+interface Vxlan1
+   vxlan source-interface Loopback0
+!
+ip routing
+!
+mpls ip
+!
+mpls ldp
+   router-id interface Loopback0
+   no shutdown
+!
+router bgp 65535
+   no bgp default ipv4-unicast
+   neighbor UNDERLAY peer group
+   neighbor UNDERLAY remote-as 65535
+   neighbor UNDERLAY update-source Loopback0
+   neighbor UNDERLAY send-community extended
+   neighbor 198.18.255.3 peer group UNDERLAY
+   neighbor 198.18.255.4 peer group UNDERLAY
+   !
+   address-family evpn
+      neighbor UNDERLAY activate
+      route import match-failure action discard
+!
+router traffic-engineering
+   rsvp
+      local-interface Loopback0
+      !
+      path 103 explicit
+         hop 198.18.0.5
+      !
+      path 104 explicit
+         hop 198.18.0.1
+         hop 198.18.0.7
+      !
+      tunnel 103
+         destination ip 198.18.255.3
+         path 103
+         no shutdown
+      !
+      tunnel 104
+         destination ip 198.18.255.4
+         path 104
+         no shutdown
+   router-id ipv4 198.18.255.1
+!
+router isis ISIS
+   net 49.0002.0000.0000.0001.00
+   is-type level-2
+   mpls ldp sync default
+   !
+   address-family ipv4 unicast
+      bfd all-interfaces
+   !
+   traffic-engineering
+      no shutdown
+      is-type level-2
+!
+mpls rsvp
+   no shutdown
+!

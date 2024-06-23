@@ -1,0 +1,12 @@
+config system global
+    set admin-console-timeout 300
+    set hostname "FW17"
+end
+config system ha
+    set group-id 1
+    set group-name "cluster01"
+    set mode a-a
+    set hbdev "port2" 100 
+    set session-sync-dev "port2" 
+    set override enable
+end

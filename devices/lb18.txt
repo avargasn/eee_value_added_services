@@ -1,0 +1,128 @@
+vrrp-a common 
+  device-id 1 
+  set-id 1 
+  enable 
+!
+device-context 1
+  vcs enable 
+!
+device-context 2
+  vcs enable 
+!
+vcs floating-ip 198.18.255.18 255.255.255.255 
+!
+vcs device 1 
+  interfaces ve 100 
+  enable 
+!
+vcs device 2 
+  interfaces ve 100 
+  enable 
+!
+device-context 1
+  session-filter filter01 set source-addr 200.0.0.22 
+!
+terminal idle-timeout 0
+!
+vlan 1/20 
+  tagged ethernet 1
+  router-interface ve 20 
+!
+vlan 1/50 
+  tagged ethernet 1
+  router-interface ve 50 
+!
+vlan 1/100 
+  tagged ethernet 1
+  router-interface ve 100 
+!
+vlan 2/20 
+  tagged ethernet 1
+  router-interface ve 20 
+!
+vlan 2/50 
+  tagged ethernet 1
+  router-interface ve 50 
+!
+vlan 2/100 
+  tagged ethernet 1
+  router-interface ve 100 
+!
+device-context 1
+  lldp enable rx tx 
+!
+device-context 2
+  lldp enable rx tx 
+!
+device-context 1
+  hostname LB18 
+!
+device-context 2
+  hostname LB19 
+!
+interface ethernet 1/1 
+  enable 
+!
+interface ethernet 2/1 
+  enable 
+!
+interface ve 1/20 
+  ip address 198.18.20.18 255.255.255.0 
+!
+interface ve 1/50 
+  ip address 198.18.50.18 255.255.255.0 
+!
+interface ve 1/100 
+  ip address 192.0.2.0 255.255.255.254 
+!
+interface ve 2/20 
+  ip address 198.18.20.19 255.255.255.0 
+!
+interface ve 2/50 
+  ip address 198.18.50.19 255.255.255.0 
+!
+interface ve 2/100 
+  ip address 192.0.2.1 255.255.255.254 
+!
+vrrp-a vrid 0 
+  floating-ip 198.18.20.254 
+!
+device-context 1
+  ip route 198.18.30.0 /24 198.18.20.1 
+!
+device-context 2
+  ip route 198.18.30.0 /24 198.18.20.1 
+!
+slb server TELNET20 198.18.30.20 
+  port 23 tcp 
+!
+slb server TELNET21 198.18.30.21 
+  port 23 tcp 
+!
+slb service-group TELNET tcp 
+  member TELNET20 23 
+  member TELNET21 23 
+!
+slb virtual-server TELNET 198.18.254.100 
+  redistribution-flagged 
+  port 23 tcp 
+    service-group TELNET 
+!
+device-context 1
+  router bgp 65535 
+    bgp router-id 198.18.255.18 
+    neighbor INTERNAL peer-group 
+    neighbor INTERNAL remote-as 65535 
+    neighbor 198.18.50.14 peer-group INTERNAL 
+    neighbor 198.18.50.15 peer-group INTERNAL 
+    redistribute vip only-flagged 
+!
+device-context 2
+  router bgp 65535 
+    bgp router-id 198.18.255.19 
+    neighbor INTERNAL peer-group 
+    neighbor INTERNAL remote-as 65535 
+    neighbor 198.18.50.14 peer-group INTERNAL 
+    neighbor 198.18.50.15 peer-group INTERNAL 
+    redistribute vip only-flagged 
+!
